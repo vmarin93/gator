@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 )
 
 func handlerLogin(s *state, cmd command) error {
@@ -13,10 +12,10 @@ func handlerLogin(s *state, cmd command) error {
 	}
 	user, err := s.db.GetUser(context.Background(), cmd.args[0])
 	if err != nil {
-		log.Fatal("Such a username doesn't exist in the db")
+		return fmt.Errorf("Could not get user %s from db: %w", cmd.args[0], err)
 	}
 	if err := s.conf.SetUser(user.Name); err != nil {
-		return err
+		return fmt.Errorf("Could set user in conf during login %w", err)
 	}
 	fmt.Printf("User %s has been logged in\n", user.Name)
 	return nil

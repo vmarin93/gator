@@ -16,7 +16,9 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 	user, err := s.db.GetUser(context.Background(), s.conf.CurrentUserName)
 	if err != nil {
-		return err
+		return fmt.Errorf(
+			"Unable to retrieve currentUser from db during addFeed operation: %w",
+			err)
 	}
 	dbFeed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
 		ID:        uuid.New(),
@@ -27,7 +29,7 @@ func handlerAddFeed(s *state, cmd command) error {
 		UserID:    user.ID,
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("Unable to add feed to db: %w", err)
 	}
 	printFeed(dbFeed)
 	return nil

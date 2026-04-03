@@ -34,7 +34,7 @@ func handlerRegister(s *state, cmd command) error {
 	println("User was created succesfully!")
 	printUser(user)
 	if err := s.conf.SetUser(user.Name); err != nil {
-		return err
+		return fmt.Errorf("Could not set user in conf during registration: %w", err)
 	}
 	return nil
 }
