@@ -24,15 +24,7 @@ To run Gator, you need the following installed on your system:
 - **Go**: [Install Go](https://go.dev/doc/install) (latest version recommended).
 - **PostgreSQL**: [Install PostgreSQL](https://www.postgresql.org/download/).
 
-## Installation
-
-You can install the `gator` CLI directly using the `go install` command:
-
-```bash
-go install github.com/vmarin93/gator@latest
-```
-
-## Configuration
+## Installation & Configuration
 
 Gator requires a configuration file located at `~/.gatorconfig.json` to store your database connection string and the current active user.
 
@@ -50,12 +42,24 @@ Gator requires a configuration file located at `~/.gatorconfig.json` to store yo
    ```
    *Replace `username`, `password`, and `gator` with your PostgreSQL credentials and database name.*
 
-3. Run the database migrations. The schema files are located in `sql/schema/`. You can use [goose](https://github.com/pressly/goose) to run them:
-   ```bash
-   cd sql/schema/
-   goose postgres "postgres://username:password@localhost:5432/gator?sslmode=disable" up
-   ```
+Once that's done, clone the repository so you have access to the SQL migration files:
+
+```bash
+git clone https://github.com/vmarin93/gator.git
+cd gator/sql/schema
+```
+
+Then run the database migrations with Goose:
+
+```bash
+goose postgres "postgres://username:password@localhost:5432/gator?sslmode=disable" up
+```
    *Replace the connection string with your actual credentials.*
+
+And lastly, we can build the executable:
+```bash
+go build
+```
 
 ## Usage
 
