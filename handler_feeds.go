@@ -10,15 +10,9 @@ import (
 	"github.com/vmarin93/gator/internal/database"
 )
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 2 {
 		return errors.New("Please provide a name and a url for the feed you want to add")
-	}
-	user, err := s.db.GetUser(context.Background(), s.conf.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf(
-			"Unable to retrieve currentUser from db during addFeed operation: %w",
-			err)
 	}
 	dbFeed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
 		ID:        uuid.New(),

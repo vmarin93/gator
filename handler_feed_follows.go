@@ -10,17 +10,13 @@ import (
 	"github.com/vmarin93/gator/internal/database"
 )
 
-func handlerFeedFollow(s *state, cmd command) error {
+func handlerFeedFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 1 {
 		return errors.New("Please provide a url for the feed you want to follow")
 	}
 	feed, err := s.db.GetFeedByURL(context.Background(), cmd.args[0])
 	if err != nil {
 		return fmt.Errorf("Unable to retrieve feed from db whilst subscribing to feed : %w", err)
-	}
-	user, err := s.db.GetUser(context.Background(), s.conf.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Unable to retrieve user from db whilst subscribing to feed: %w", err)
 	}
 	feedFollow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
 		ID:        uuid.New(),
@@ -32,15 +28,12 @@ func handlerFeedFollow(s *state, cmd command) error {
 	if err != nil {
 		return fmt.Errorf("Unable to subscribe to feed: %w", err)
 	}
-	fmt.Printf("Congratulations %s. You have just subscribed to %s", feedFollow.UserName, feedFollow.FeedName)
+	fmt.Printf("Congratulations %s. You have just subscribed to %s",
+		feedFollow.UserName, feedFollow.FeedName)
 	return nil
 }
 
-func handlerListFeedFollows(s *state, cmd command) error {
-	user, err := s.db.GetUser(context.Background(), s.conf.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Unable to retrieve user from db whilst listing the feed he follows: %w", err)
-	}
+func handlerListFeedFollows(s *state, cmd command, user database.User) error {
 	feedFollows, err := s.db.ListFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return fmt.Errorf("Unable to retrieve the list of feeds the user follows: %w", err)
