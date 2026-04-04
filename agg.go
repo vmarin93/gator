@@ -3,10 +3,17 @@ package main
 import (
 	"context"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"html"
 	"io"
+	"log"
 	"net/http"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/lib/pq"
+	"github.com/vmarin93/gator/internal/database"
 )
 
 type RSSFeed struct {
@@ -67,6 +74,31 @@ func scrapeFeeds(s *state) error {
 	if err := s.db.MarkFeedFetched(context.Background(), feed.ID); err != nil {
 		return fmt.Errorf("Unable to mark feed %s as fetched in the db: %w", feed.Name, err)
 	}
-	printRSSFeed(rssFeed)
+	for _, item := range rssFeed.Channel.Item {
+		publishedAt, err := time.Parse(time.RFC1123Z, item.PubDate)
+		if err != nil {
+			publishedAt, err = time.Parse(time.RFC1123, item.PubDate)
+			if err != nil {
+				publishedAt = time.Now().UTC()
+			}
+		}
+		_, err = s.db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: item.Description,
+			PublishedAt: publishedAt,
+			FeedID:      feed.ID,
+		})
+		if err != nil {
+			pqErr, ok := errors.AsType[*pq.Error](err)
+			if ok {
+				if pqErr.Code == "23505" {
+					continue
+				}
+			}
+			log.Printf("Unable to add post %s to the db: %v", item.Title, err)
+		}
+	}
 	return nil
 }
