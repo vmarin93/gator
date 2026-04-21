@@ -4,7 +4,7 @@ Gator is a command-line RSS feed aggregator built in Go. It allows users to foll
 
 This project was developed as part of the [Boot.dev](https://www.boot.dev) curriculum to practice Go programming, SQL integration, and building long-running services.
 
-## Learning Goals
+## Motivation
 
 - **Go & PostgreSQL**: Integration of a Go application with a relational database.
 - **Type-Safe SQL**: Using `sqlc` to generate Go code from raw SQL queries.
@@ -24,7 +24,7 @@ To run Gator, you need the following installed on your system:
 - **Go**: [Install Go](https://go.dev/doc/install) (latest version recommended).
 - **PostgreSQL**: [Install PostgreSQL](https://www.postgresql.org/download/).
 
-## Installation & Configuration
+## Quick Start
 
 Gator requires a configuration file located at `~/.gatorconfig.json` to store your database connection string and the current active user.
 
@@ -81,3 +81,7 @@ Once configured, you can start using Gator. Here are some of the available comma
 ### Aggregation and Browsing
 - `gator agg <duration>`: Start the long-running aggregator service. Example: `gator agg 1m` to fetch feeds every minute.
 - `gator browse [limit]`: View the latest posts from feeds you follow. Default limit is 2.
+
+## Contributing
+
+Fork the repo, write your code and submit a pull request. Thanks!
